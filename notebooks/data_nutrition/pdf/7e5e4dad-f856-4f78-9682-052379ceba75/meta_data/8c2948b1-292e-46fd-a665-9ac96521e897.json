@@ -1,0 +1,9 @@
+{
+    "uid": "8c2948b1-292e-46fd-a665-9ac96521e897",
+    "query": [
+        "nutrition"
+    ],
+    "url": "https://eutils.ncbi.nlm.nih.gov/entrez/eutils/efetch.fcgi?db=pubmed&api_key=7b9c89a970ae955f44126d6a53a655b9f808&retmax=10&retmode=xml&query_key=1&webenv=MCID_64116902e85b2964f968e594&retstart=0",
+    "total": 10,
+    "iter": 0
+}
