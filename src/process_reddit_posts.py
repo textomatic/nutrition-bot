@@ -14,6 +14,15 @@ logging.getLogger("haystack").setLevel(logging.INFO)
 from helper_functions import get_elasticsearch_document_store
 
 def main():
+    '''
+    Process Reddit posts and index them in Elasticsearch.
+
+    Args:
+        None
+    
+    Return:
+        None
+    '''
 
     # get the host where Elasticsearch is running, default to localhost
     host = os.environ.get("ELASTICSEARCH_HOST", "localhost")
