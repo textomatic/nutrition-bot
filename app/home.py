@@ -13,7 +13,7 @@ def main():
 
     if submit and query is not None:
 
-        response = requests.get('http://35.207.46.114:8060/search/'+query) # API endpoint for nutritionbot
+        response = requests.get('http://35.207.46.114:8060/search/'+query, headers={"api-key": st.secrets["haystack_api_key"]}) # API endpoint for nutritionbot
         response_json = response.json() # Get json from response
         ans_respp = response_json['research_paper_results']
         ans_socmed = response_json['reddit_results']
