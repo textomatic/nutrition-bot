@@ -54,37 +54,15 @@ The project data and codes are arranged in the following manner:
 
 ```
 ├── README.md                           <- description of project and how to set up and run it
-├── requirements.txt                    <- requirements file to document dependencies
-├── scripts                             <- directory for data processing, modelling and utility scripts
-    ├── dataset
-        ├── make_dataset.py             <- script to get data
-        ├── optimize_dataset.py         <- script to check if the images are corrupt and save them at 80% quality
-    ├── evaluation                      <- script to evaluate different models
-        ├── eval_config.json
-        ├── eval.py
-        ├── eval_helper_functions.py
-    ├── resnet                          <- script to train and test the resnet model
-        ├── resnet_config.json
-        ├── resnet_helper_functions.py
-        ├── resnet_transfer_learning.py
-    ├── vgg                             <- script to train and test the vgg model
-        ├── vgg_config.json
-        ├── vgg_helper_functions.py
-        ├── vgg_transfer_learning.py
-    ├── svm                             <- script to train and test the svm model
-        ├── svm_config.json
-        ├── svm_helper_functions.py
-        ├── svm_training.py.py
+├── requirements.yaml                   <- requirements file to document dependencies
+├── src                                 <- directory for data processing, modelling and utility scripts
 ├── models                              <- directory for trained models
 ├── data                                <- directory for project data
-    ├── images                          <- directory to store images
-        ├── neutral
-        ├── nsfw
-        ├── violence
-    ├── source_urls                     <- directory to store source urls
-        ├── neutral.txt
-        ├── nsfw.txt
-├── scratch                             <- directory to store any intermediate and scratch files used
+    ├── all_pdfs                        <- directory to store all research papers (should be removed?)
+    ├── reddit                          <- directory to store all reddit posts & replies
+        ├── nutrition.csv
+        ├── nutrition.pkl
+        ├── top_questions.csv
 ├── notebooks                           <- directory to store any exploration notebooks used
 ├── .gitignore                          <- git ignore file
 ```
