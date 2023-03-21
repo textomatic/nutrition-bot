@@ -14,28 +14,14 @@ For most people, especially for people who are interested in body healthcare, *n
 
 Our project mainly focuses on solving the third problem: the lack of scientific evidence support. To be more specific, our project builds up a Q&A query system that allows users to input questions related to nutrition and find approprate answers based on scientific research papers and answers from reddit posts. 
 
-## About The Data
-We identified three key image datasets that we believe will be beneficial in modeling our content moderation problem. These datasets are:
+## Data Sources
+As discussed before, our project aims to solve the problem of lack of scientific evidence support and try to provide answers to each nutrition related problems from both scientific research papers and reddit posts & replies. Therefore, our datasets mainly contains two parts: scientific research papers in .pdf format and contents of reddit posts and discussions in .csv format.
 
-### NSFW Images Data
-The NSFW images dataset used was collected from the [
-EBazarov/nsfw_data_source_url](https://github.com/EBazarov/nsfw_data_source_urls) github repository. The repository contains links to 1,589,331 NSFW images across 159 different categories.
+### Scientific Research Papers
+The scientific research papers on topics about nutrition are collected both manually and automatically with the support of web scraping python scripts. To be more specific, we manually downloaded ~200 most recent & most relevant scientific research papers on top questions about nutrition posted on Reddit, and automatically scraped more than 2000 academic research papers from *PubMed*, *ScienceDirect*, etc. The total number of scientific research papers downloaded is 2480, and we uploaded them to Google Cloud Bucket which can be accessed [here](https://console.cloud.google.com/storage/browser/aipi540_nlp_nutrition).
 
-We wrote a python script to sample 10,000 image urls from this dataset and download the images. The script can be found in the `scripts` folder. The images were downloaded into the `data/images/nsfw` folder. As the images were large in size, we compressed them into a zip file and uploaded it to Box drive which can be accessed [here](https://duke.box.com/shared/static/81jx04bwnct82prwqh5ikm6xq9h8ey3t.zip).
-
-### Neutral Images Data
-The NSFW images dataset used was collected from the [
-alex000kim/nsfw_data_scraper](https://github.com/alex000kim/nsfw_data_scraper) github repository. The repository contains links to 36,837 neutral images across different categories.
-
-We wrote a python script to download all these images. The script can be found in the `scripts` folder. The images were downloaded into the `data/images/neutral` folder. As the images were large in size, we compressed them into a zip file and uploaded it to Box drive which can be accessed [here](https://duke.box.com/shared/static/xg0790jdcsk6mfbgpw59tqk0ym6sq9mf.zip).
-
-### Violence Images Data
-The violence images dataset used was collected manually using the [Google Images](https://images.google.com/) search engine. We searched for specific keywords such as agression, assault, hostility, riot, mob lynching etc. and downloaded the results using the Chrome Browser extension Fatkun.
-
-As the images were large in size, we compressed them into a zip file and uploaded it to Box drive which can be accessed [here](https://duke.box.com/shared/static/g87440yf6v4pun482mcvon3kiloe758w.zip).
-
-### Accessing the Data
-As mentioned, the dataset used for training the models is uploaded to a Box drive. Feel free to use the links above. In case, you are unable to access them, please email Shrey Gupta at s.gupta[AT]duke[DOT]edu with your name and reason for accessing the data and we will be happy to provide access.
+### Reddit Posts & Replies
+The posts & replies on various topics about nutrition are collected using python scripts. To be more specific, we extracted reddit posts & comments using web scraping; the total number of posts extracted is 163 and the total number of comments & replies extracted is 25,286. The entire scraped dataset is stored as `nutrition.csv` also with a picked file under folder `/data/reddit`.
 
 ## Data Processing (TODO)
 Once the images were downloaded using the URLs, we wrote a python script to do the following:
