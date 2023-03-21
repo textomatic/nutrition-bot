@@ -6,9 +6,9 @@ For most people, especially for people who are interested in body healthcare, *n
 
 *Reddit*, one of the largest online communities in the United States, has a wide-range of posts and discussions on nutrition related topics as it should be. Reddit contains many subreddits dedicated to nutrition topics, making it a great platform for anyone interested in learning more about healthy eating, dietary advice, and related discussions. Nonetheless, not every nutrition question from every user are approprately answered or solved--there still exists several problems of Reddit posts & discussions on nutrition topic: 
 
-- Lack of context: some Reddit posts may not contain enough information due to the character limit or formatting limit of the Reddit platform
+- **Lack of context**: some Reddit posts may not contain enough information due to the character limit or formatting limit of the Reddit platform
 
-- Lack of moderation: some Reddit users may encounter irrelevant or even offensive comments (or trolls /spams)
+- **Lack of moderation**: some Reddit users may encounter irrelevant or even offensive comments (or trolls /spams)
 
 - **Lack of scientific evidence support**: some replies from certain users to a specific nutrition related problem are quite meaningful and beneficial, yet still not convincing enough since the lack of scientific evidence 
 
