@@ -11,6 +11,8 @@ def main():
         query = st.text_input('Enter your query:') # Input text box
         submit = st.form_submit_button('Ask!') # Submit button
 
+    st.markdown('Note: Any score displayed refer to the relevance score of the answer determined by our model.')
+
     if submit and query is not None:
     
         response = requests.get('http://35.207.46.114:8060/search/'+query, headers={"api-key": st.secrets["haystack_api_key"]}) # API endpoint for nutritionbot
