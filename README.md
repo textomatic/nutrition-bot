@@ -104,11 +104,14 @@ conda activate haystack
 ```
 pip install -r requirements.txt 
 ```
+**3. Change directory:** 
+```
+cd src
+```
 **3. Start the server:** 
 ```
-uvicorn src.search:app --reload --host 0.0.0.0 --port 8060
+uvicorn search:app --reload --host 0.0.0.0 --port 8060
 ```
-
 &nbsp;
 ## Project Structure
 The project data and codes are arranged in the following manner:
