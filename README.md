@@ -18,10 +18,10 @@ Our project mainly focuses on solving the third problem: the lack of scientific 
 As discussed before, our project aims to solve the problem of lack of scientific evidence support and try to provide answers to each nutrition related problems from both scientific research papers and reddit posts & replies. Therefore, our datasets mainly contains two parts: scientific research papers in .pdf format and contents of reddit posts and discussions in .csv format.
 
 ### Scientific Research Papers
-The scientific research papers on topics about nutrition are collected both manually and automatically with the support of web scraping python scripts. To be more specific, we manually downloaded ~200 most recent & most relevant scientific research papers on top questions about nutrition posted on Reddit, and automatically scraped more than 2000 academic research papers from *PubMed*, *ScienceDirect*, etc. The total number of scientific research papers downloaded is 2480, and we uploaded them to Google Cloud Bucket which can be accessed [here](https://console.cloud.google.com/storage/browser/aipi540_nlp_nutrition).
+The scientific research papers on topics about nutrition are collected both manually and automatically with the support of web scraping python scripts. To be more specific, we manually downloaded ~200 most recent & most relevant scientific research papers on top questions about nutrition posted on Reddit, and automatically scraped more than 2000 academic research papers from *PubMed*, *ScienceDirect*, etc. The total number of scientific research papers downloaded is 2480, and we uploaded them to a Google Cloud Storage Bucket.
 
 ### Reddit Posts & Replies
-The posts & replies on various topics about nutrition are collected using python scripts. To be more specific, we extracted reddit posts & comments using web scraping; the total number of posts extracted is 163 and the total number of comments & replies extracted is 25,286. The entire scraped dataset is stored as `nutrition.csv` also with a picked file under folder `/data/reddit`.
+The posts & replies on various topics about nutrition are collected using python scripts. To be more specific, we extracted reddit posts & comments from the nutrition subreddit (`r/nutrition`) using the Python Reddit API Wrapper (PRAW) package. The total number of posts extracted is 163 and the total number of comments & replies extracted is 25,286. Only posts with an upvote count higher than 50 were downloaded. The collected dataset is stored as `nutrition.csv` and also as a pickled file under the folder `/data/reddit/`.
 
 ## Setting up Elasticsearch Document Store
 
@@ -79,9 +79,24 @@ python scripts/process_research_papers.py
 ```
 
 ### Reddit Posts & Replies
-TODO
 
-&nbsp;
+The Reddit posts and comments were downloaded using the PRAW library. You will need to register for a Reddit account and create a new app in your user profile to obtain a client ID and client secret. Those will be the credentials needed for downloading data using PRAW. Save those credentials in the following format as `praw.ini` in the root folder:
+```ini
+client_id=<your_client_id>
+client_secret=<your_client_secret>
+user_agent=<your_custom_defined_user_agent_string>
+```
+
+Assuming you are in the same conda environment as the previous step:
+
+**1. Run the following script to download data from the `r/nutrition` subreddit:** 
+```
+python scripts/reddit_download.py
+```
+
+The data would be available as CSV and PKL in the `/data/reddit/` directory.
+
+
 ## Running the QnA Pipeline Server
 The QnA pipeline server is a FastAPI server that allows us to query the elasticsearch document store using a REST API.
 
@@ -112,7 +127,7 @@ cd src
 ```
 uvicorn search:app --reload --host 0.0.0.0 --port 8060
 ```
-&nbsp;
+
 ## Project Structure
 The project data and codes are arranged in the following manner:
 
@@ -128,7 +143,7 @@ The project data and codes are arranged in the following manner:
     ├── helper_functions.py             <- script to store helper functions
     ├── process_reddit_posts.py         <- script to process the reddit posts
     ├── process_research_papers.py      <- script to process the research papers
-    ├── reddit_scraper.py               <- script to scrape reddit posts
+    ├── reddit_download.py               <- script to download reddit posts
     ├── search.py                       <- script to run the QnA pipeline server
 ├── .gitignore                          <- git ignore file
 ├── README.md                           <- description of project and how to set up and run it
@@ -136,5 +151,5 @@ The project data and codes are arranged in the following manner:
 ```
 &nbsp;
 ## Nutrition Bot (Streamlit):
-* Refer to the [README.md](https://github.com/textomatic/nutrition-bot/blob/st/README.md) at this link to run the streamlit based web application or access it [here](https://nutrition-bot.streamlit.app).
-* You can find the code for the stremalit web-app [here](https://github.com/textomatic/nutrition-bot/tree/st)
+* Refer to the [README.md](https://github.com/textomatic/nutrition-bot/blob/st/README.md) at this link to run the Streamlit-based web application or access it [here](https://nutrition-bot.streamlit.app).
+* You can find the code for the Streamlit web-app [here](https://github.com/textomatic/nutrition-bot/tree/st)

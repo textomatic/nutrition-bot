@@ -6,7 +6,7 @@ import pandas as pd
 _PRAW_INI_SECTION = "nutritionbot"
 _SUBREDDIT_NAME = "nutrition"
 _CSV_FILE_PATH = "../data/reddit/nutrition.csv"
-
+_PKL_FILE_PATH = "../data/reddit/nutrition.pkl"
 
 def check_ini():
     """
@@ -24,7 +24,7 @@ def check_ini():
 
 def main():
     """
-    Initialize Reddit instance using PRAW, download threads and comments from a subreddit, save them in a dataframe, and store them as a CSV file.
+    Initialize Reddit instance using PRAW, download threads and comments from a subreddit, save them in a dataframe, and store them as a CSV and Pickle files.
 
     Args:
         None
@@ -68,6 +68,15 @@ def main():
     # Save dataframe as CSV file
     df.to_csv(_CSV_FILE_PATH, index=False)
     print(f"Data successfully saved to: {_CSV_FILE_PATH}")
+
+    # Group dataframe by Thread Title and sort rows according to the highest thread upvotes and comment upvotes
+    df_group = df.groupby(by=['Thread Title'])['Thread Title', 'Thread Upvotes', 'Thread ID', 'Thread URL', 'Thread Body', 'Number of Comments', 'Comment ID', 'Comment Link', 'Comment Upvotes','Comment Body'].apply(lambda x: x).sort_values(by=["Thread Upvotes", "Comment Upvotes"], ascending=False).reset_index(drop=True)
+    
+    # Add a new column to record approximate word count of each comment
+    df_group['Comment Word Count'] = df_group['Comment Body'].apply(lambda x: len(x.split(" ")))
+    
+    # Save dataframe as pickle for ease of ingestion by ElasticSearch document store
+    df_group.to_pickle(_PKL_FILE_PATH)
 
 
 if __name__ == '__main__':
