@@ -23,156 +23,115 @@ The scientific research papers on topics about nutrition are collected both manu
 ### Reddit Posts & Replies
 The posts & replies on various topics about nutrition are collected using python scripts. To be more specific, we extracted reddit posts & comments using web scraping; the total number of posts extracted is 163 and the total number of comments & replies extracted is 25,286. The entire scraped dataset is stored as `nutrition.csv` also with a picked file under folder `/data/reddit`.
 
-## Data Processing (TODO)
-Once the images were downloaded using the URLs, we wrote a python script to do the following:
-- Remove corrupt images
-- Remove duplicate images
-- Resave the images after optimizing the quality to 80%
+## Setting up Elasticsearch Document Store
 
-The processed data on which the models were trained can either be downloaded directly using the links above or the scripts to download and optimize the dataset can be found in the `scripts` folder and can be run as follows:
+Elasticsearch is a distributed, open source search and analytics engine for all types of data, including textual, numerical, geospatial, structured, and unstructured. It allows us to store, search, and analyze big volumes of data quickly and in near real time. It is generally used as the underlying engine/technology that powers applications that have complex search features and requirements. In our project, we use Elasticsearch as the document store to store the research papers and reddit posts & replies.
+
+It can be setup on your local machine using docker. The following steps can be followed to setup Elasticsearch on your local machine:
+
+**1. Install Docker:** 
+```bash
+sudo apt-get update
+sudo apt-get install docker-ce docker-ce-cli containerd.io
+```
+**2. Pull the Elasticsearch docker image:** 
+```bash
+docker pull docker.elastic.co/elasticsearch/elasticsearch:7.17.6
+```
+**3. Create a volume to store the Elasticsearch data:** 
+```bash
+docker volume create es_v1
+```
+
+**4. Run the Elasticsearch docker image:** 
+```bash
+docker run -d -p 9200:9200 -e 'discovery.type=single-node' --name es_v1 --mount type=volume,src=es_v1,target=/usr/share/elasticsearch/ elasticsearch:7.17.6
+```
+
+**5. Check if Elasticsearch is running:** 
+```bash
+curl -X GET "localhost:9200/"
+```
+
+## Data Processing
+### Research Papers
+
+The research papers were downloaded in .pdf format from the google cloud storage bucket in the `data/all_pdfs folder`. Then, a python script was run to convert them into text, preprocess them, chunk them into sentences, and index them into the elasticsearch document store. The python script can be found in the `scripts` folder and can be run as follows:
 
 **1. Create a new conda environment and activate it:** 
 ```
-conda create --name cv python=3.8
+conda create --name haystack python=3.8
 conda activate cv
 ```
 **2. Install python package requirements:** 
 ```
 pip install -r requirements.txt 
 ```
-**3. Run the data download script:** 
+**3. Install xpdf:** 
+```bash
+wget --no-check-certificate https://dl.xpdfreader.com/xpdf-tools-linux-4.04.tar.gz
+tar -xvf xpdf-tools-linux-4.04.tar.gz
+sudo cp xpdf-tools-linux-4.04/bin64/pdftotext /usr/local/bin
 ```
-python scripts/dataset/make_dataset.py
+**4. Run the data download script:** 
 ```
-**4. Run the data optimize script:** 
-```
-python scripts/dataset/optimize_dataset.py
+python scripts/process_research_papers.py
 ```
 
+### Reddit Posts & Replies
+TODO
+
+&nbsp;
+## Running the QnA Pipeline Server
+The QnA pipeline server is a FastAPI server that allows us to query the elasticsearch document store using a REST API.
+
+The pipeline has the following steps:
+1. Get the query from the user
+2. Embed the query using Dense Passage Retrieval (DPR) model (`facebook/dpr-question_encoder-single-nq-base`)
+3. Retrieve the top 10 relevant documents from the elasticsearch document store using the query embedding
+4. Run the retrieved documents through the reader model (`deepset/roberta-base-squad2`) to top 5 answers
+5. Filter the answers based on the score
+6. Return the answers as a JSON response
+
+The server can be run as follows:
+
+**1. Create a new conda environment and activate it:** 
+```
+conda create --name haystack python=3.8
+conda activate haystack
+```
+**2. Install python package requirements:** 
+```
+pip install -r requirements.txt 
+```
+**3. Start the server:** 
+```
+uvicorn src.search:app --reload --host 0.0.0.0 --port 8060
+```
+
+&nbsp;
 ## Project Structure
 The project data and codes are arranged in the following manner:
 
 ```
-├── README.md                           <- description of project and how to set up and run it
-├── requirements.yaml                   <- requirements file to document dependencies
-├── src                                 <- directory for data processing, modelling and utility scripts
-├── models                              <- directory for trained models
 ├── data                                <- directory for project data
-    ├── all_pdfs                        <- directory to store all research papers (should be removed?)
+    ├── all_pdfs                        <- placeholder directory to store all research papers
     ├── reddit                          <- directory to store all reddit posts & replies
         ├── nutrition.csv
         ├── nutrition.pkl
         ├── top_questions.csv
 ├── notebooks                           <- directory to store any exploration notebooks used
+├── src                                 <- directory for data processing and QnA pipeline server scripts
+    ├── helper_functions.py             <- script to store helper functions
+    ├── process_reddit_posts.py         <- script to process the reddit posts
+    ├── process_research_papers.py      <- script to process the research papers
+    ├── reddit_scraper.py               <- script to scrape reddit posts
+    ├── search.py                       <- script to run the QnA pipeline server
 ├── .gitignore                          <- git ignore file
-```
-
-&nbsp;
-## Model Training and Evaluation (TODO)
-A non deep learning and a deep learning modelling approach were used to accurately identify and categorize social media images based on their content. The non deep learning approach used Random Forest and SVM models whereas the deep learning approach used VGG and Resnet model architectures.
-### Non-Deep Learning Models
-
-### SVM
-To avoid the bottle neck of being able to train the model on a small dataset, a SVM (Support Vector Machine) model was trained. The PyTorch implementation of SVM was used to be able to use the whole dataset to train the model.
-
-But due to the high dimensionality of the image data, the SVM model was not able to perform well. The model was able to achieve an accuracy of 40% on the test set. This is because SVMs are linear classifiers and are not able to capture non-linear relationships in the data. This is where deep learning models come in handy.
-
-Following are the steps to run the code and train a SVM model:
-
-**1. Create a new conda environment and activate it:** 
-```
-conda create --name cv python=3.8
-conda activate cv
-```
-**2. Install python package requirements:** 
-```
-pip install -r requirements.txt 
-```
-
-**3. Tweak the model parameters [OPTIONAL]:** 
-```
-nano scripts/svm/svm_config.json
-```
-
-**4. Run the training script:** 
-```
-python scripts/svm/svm_training.py
+├── README.md                           <- description of project and how to set up and run it
+├── requirements.txt                    <- requirements file to document dependencies
 ```
 &nbsp;
-### Deep Learning Models
-### VGG
-A VGG19 model was trained on the dataset. Transfer learning was performed on the model in 2 ways:
-- Case 1: VGG19_bn with all layers trainable
-- Case 2: VGG19_bn with just the last fully connected layer trainable
-
-The model was trained for 10 epochs in both the cases and the training and validation loss and accuracy were plotted. The model in case 1 was able to achieve an accuracy of 74% on the test set while the model in case 2 achieved 89%.
-
-Following are the steps to run the code and train a VGG model:
-
-**1. Create a new conda environment and activate it:** 
-```
-conda create --name cv python=3.8
-conda activate cv
-```
-**2. Install python package requirements:** 
-```
-pip install -r requirements.txt 
-```
-
-**3. Tweak the model parameters [OPTIONAL]:** 
-```
-nano scripts/vgg/vgg_config.json
-```
-
-**4. Run the training script:** 
-```
-python scripts/vgg/vgg_transfer_learning.py
-```
-### Resnet
-
-The SOTA model in image classification - Resnet was trained on the dataset in the following variations:
-- Case 1: Resnet18 with all layers trainable
-- Case 2: Resnet18 with just the last fully connected layer trainable
-- Case 3: Resnet50 with all layers trainable
-- Case 4: Resnet50 with just the last fully connected layer trainable
-- Case 5: Resnet152 with all layers trainable
-- Case 6: Resnet152 with just the last fully connected layer trainable
-
-We trained three models for comparison. We started with a simple image classifier - Resnet18. The labelled images were split into train and test datasets and loaded in Pytorch Dataset Objects. A pretrained Resnet18 model was loaded and its fully connected head was stripped off to perform transfer learning. The new trasnfer learned resnet takes in input images of size 640x640 and gives the predicted probability of presence of each class in the image.
-
-The results of the model were as follows:
-| Model     | Mode             | Accuracy (Test) |
-| --------- | ---------------- | :-------------: |
-| Resnet18  | Train all layers | 85%             |
-| Resnet18  | Train FC layer   | 84%             |
-| Resnet50  | Train all layers | 87%             |
-| Resnet50  | Train FC layer   | 88%             |
-| Resnet152 | Train all layers | 89%             |
-| Resnet152 | Train FC layer   | 91%             |
-
-Following are the steps to run the code and train a Resnet model:
-
-**1. Create a new conda environment and activate it:** 
-```
-conda create --name cv python=3.8
-conda activate cv
-```
-**2. Install python package requirements:** 
-```
-pip install -r requirements.txt 
-```
-
-**3. Tweak the model parameters [OPTIONAL]:** 
-```
-nano scripts/resnet/resnet_config.json
-```
-
-**4. Run the training script:** 
-```
-python scripts/resnet/resnet_transfer_learning.py
-```
-
-
-## Content Moderation Application (Streamlit): (TODO)
-* Refer to the [README.md](https://github.com/guptashrey/Content-Moderation-for-Social-Media/blob/st/README.md) at this link to run the streamlit based web application or access it [here](https://guptashrey-content-moderation-for-1--content-moderation-5y11hh.streamlit.app/).
-* You can find the code for the stremalit web-app [here](https://github.com/guptashrey/Content-Moderation-for-Social-Media/tree/st)
+## Nutrition Bot (Streamlit):
+* Refer to the [README.md](https://github.com/textomatic/nutrition-bot/blob/st/README.md) at this link to run the streamlit based web application or access it [here](https://nutrition-bot.streamlit.app).
+* You can find the code for the stremalit web-app [here](https://github.com/textomatic/nutrition-bot/tree/st)
